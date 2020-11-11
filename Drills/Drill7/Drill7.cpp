@@ -1,4 +1,4 @@
-#include "../std_lib_facilities.h"
+#include "../../std_lib_facilities.h"
 
 const char number = '8';
 const char quit = 'q';
@@ -210,11 +210,12 @@ try {
 
 //Functions rules
 double calc_pow(){
+		char ch;
+	if (cin.get(ch) && ch != '(') error("'(' expected");
+	cin.putback(ch);
 		double i = term();
 		double d = expression();
-		cout << "asd1: " <<i <<endl;
-		cout << "asd2: " << d << endl;
-        return pow(d, i);
+        return pow(i, d);
 }
 
 
@@ -249,8 +250,6 @@ double primary()
 			return calc_sqrt();
 		case pows:
 			return calc_pow();
-		default:
-			error("primary expected");
 	}
 	return -1;
 }
