@@ -12,6 +12,4 @@ main(){
     const int cx = 7;
     const int cy = 9;
 
-    double dx = 7.7;
-    double dy = 9.9;
 }

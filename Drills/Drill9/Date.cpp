@@ -1,50 +1,121 @@
 #include "../../std_lib_facilities.h"
 
-struct Date {
-	int y, m, d;
+namespace UDChrono{
+
+class Year {
+	static constexpr int min = 1800;
+	static constexpr int max = 2077;
+public:
+	class Invalid{};
+	Year(int x): y(x) {if (x < min || x > max) throw Invalid{};}
+	int year(){ return y;}
+	void increment() { y++; if(y > max) throw Invalid{};}
+private:
+	int y;
 };
 
-void init_date(Date& date, int y, int m, int d)
-{
-	if (y > 0)
-		date.y = y;
-	else
-		error("Invalid year");
-	if (m < 12 && m > 0)
-		date.m = m;
-	else
-		error("Invalid month");
-	if (d > 0 && d < 32)
-		date.d = d;
-	else
-		error("Invalid day");
+Year operator++(Year& year){
+	year.increment();
+	return 0;
 }
 
-void add_day(Date& date, int n)
-{
-	date.d += n;
-	if (date.d > 31) 
-	{
-		date.m++;
-		date.d -= 31;
-		if (date.m > 12)
-		{
-			date.y++;
-			date.m -= 12;
-		}
-	}
+ostream& operator<<(ostream& os, Year year){
+	return os << year.year();
 }
+
+
+const vector<string> months = {
+    "January",
+    "Febuary",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "Septermber",
+    "October",
+    "November",
+    "December"
+};
+
+enum class Month{
+    jan, feb, mar, apr, may, jun, july, aug, sept, oct, nov, dec
+};
+
+Month operator++(Month& m){
+    m = (m==Month::dec) ? Month::jan : Month(int(m)+1);
+    return m;
+}
+
+ostream& operator<<(ostream& os, Month m){
+    return os << months[int(m)];
+}
+
+
+class Date
+{
+	Year year;
+	Month month; 
+	int day;
+	
+public:
+	class Invalid{};
+	
+	Date(): year(Year{2001}), month(Month::jan), day(1){}
+	Date(Year y, Month m, int d): year(y), month(m), day(d) { if (!is_valid()) throw Invalid{};}
+	
+	bool is_valid();
+	void add_day(int n);
+	Year get_year() const { return year;}
+	Month get_month() const { return month;}
+	int get_day() const {return day;}
+};
+
+bool Date::is_valid(){
+	if (day < 1 || day > 31)
+		return false;
+	return true;
+}
+
+void Date::add_day(int n)
+{
+	day += n;
+	if (day > 31)
+	{
+		++month;
+		day -= 31;
+		if (month == Month::jan)
+		{
+			++year;
+		}
+		
+	}
+	
+}
+
+} //End of UDChrono
 
 int main()
 {
-	Date today;
-    init_date(today,1978,6,25);
-    cout << "Date: " << today.y << ". " << today.m << ". " << today.d << ".\n";
-    Date tomorrow = today;
-    add_day(tomorrow, 1);
-    cout << "Date: " << tomorrow.y << ". " << tomorrow.m << ". " << tomorrow.d << ".\n";
-    Date invalid;
-    init_date(invalid,2000,50,432);
-    cout << "Date: " << invalid.y << ". " << invalid.m << ". " << invalid.d << ".\n";
-    return 0;
+try{
+	UDChrono::Date today{UDChrono::Year{1978}, UDChrono::Month::jun, 25};
+	cout << today.get_year() << ".";
+	cout << today.get_month() << ".";
+	cout << today.get_day() << endl;
+	UDChrono::Date tomorrow{today};
+	tomorrow.add_day(1);
+	cout << tomorrow.get_year() << ".";
+	cout << tomorrow.get_month() << ".";
+	cout << tomorrow.get_day() << endl;
+
+}catch (exception& e) {
+	cout << "Error: " << e.what() << endl;
+	return 1;
+}catch(UDChrono::Date::Invalid){
+	cout << "Invalid Date" << endl;
+	return 2;
+}catch(UDChrono::Year::Invalid){
+	cout << "Invalid Year" << endl;
+}
 }
