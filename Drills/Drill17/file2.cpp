@@ -54,7 +54,8 @@ int main() {
 
     cout << '\n';
 
-    
+
     delete[] p1;
     delete[] p2;
+    delete[] p3;
 }

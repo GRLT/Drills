@@ -35,9 +35,9 @@ int main(){
 
    print_vector(cout, v10);
 
-    delete[] p1;
-    delete[] p2;
-    delete[] p3;
+
 
     return 0;
+
+    delete[] arr20;
 }
